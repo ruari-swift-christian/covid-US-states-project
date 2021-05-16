@@ -1,0 +1,453 @@
+#PROJECT: Covid-19 Cases Month to Month from March 2020 to April 2021
+
+#Project Goals: Create animated graphs: one bar graph of covid cases per month and one line plot usingthe package plotly to animate the ggplot graph.
+Create a Choroplethic map of the United States showing per capita maps for each US state(Orange: Cases, Blue: Vaccinated) per 100,000 State residents
+
+
+
+#R Markdown Code:
+
+#load plotly package
+library(plotly)
+## Loading required package: ggplot2
+## 
+## Attaching package: 'plotly'
+## The following object is masked from 'package:ggplot2':
+## 
+##     last_plot
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## The following object is masked from 'package:graphics':
+## 
+##     layout
+#clean the data getting rid of NA's and making non ID columns numerical type
+map=read.csv("covid_project1.csv", header=TRUE, sep=',', dec='.', stringsAsFactors=FALSE)
+map
+##             State Total.Covid.19.Deaths Total.Covid.19.Cases
+## 1         Alabama                10,686              518,000
+## 2          Alaska                   299               64,259
+## 3         Arizona                17,062              848,000
+## 4        Arkansas                 5,661              332,000
+## 5      California                60,245            3,690,000
+## 6        Colorado                 6,203               479,00
+## 7     Connecticut                 7,944              322,000
+## 8        Delaware                 1,573               97,784
+## 9         Florida                33,967            2,110,000
+## 10        Georgia                18,825            1,050,000
+## 11         Hawaii                   467               30,844
+## 12          Idaho                 1,995              183,000
+## 13       Illinois                23,762            1,280,000
+## 14        Indiana                13,131              699,000
+## 15           Iowa                 5,849               356,00
+## 16         Kansas                 4,938              307,000
+## 17       Kentucky                 6,328              436,000
+## 18      Louisiana                10,216              449,000
+## 19          Maine                   750               53,434
+## 20       Maryland                 8,424              424,000
+## 21  Massachusetts                17,376              655,000
+## 22       Michigan                17,471              812,000
+## 23      Minnesota                 7,010              538,000
+## 24    Mississippi                 7,086              307,000
+## 25       Missouri                 9,000              591,000
+## 26        Montana                 1,521              106,000
+## 27       Nebraska                 2,328              214,000
+## 28         Nevada                 5,323              307,000
+## 29  New Hampshire                 1,253               87,978
+## 30     New Jersey                24,826              947,000
+## 31     New Mexico                 3,978              193,000
+## 32       New York                50,465            1,940,000
+## 33 North Carolina                12,273              935,000
+## 34   North Dakota                 1,501              105,000
+## 35           Ohio                18,827            1,040,000
+## 36       Oklahoma                 6,669              443,000
+## 37         Oregon                 2,451              169,000
+## 38   Pennsylvania                25,421            1,070,000
+## 39   Rhode Island                 2,638              141,000
+## 40 South Carolina                 9,248              561,000
+## 41   South Dakota                 1,946              119,000
+## 42      Tennessee                11,900              808,000
+## 43          Texas                49,273            2,820,000
+## 44           Utah                 2,157              389,000
+## 45        Vermont                   231               20,815
+## 46       Virginia                10,451              633,000
+## 47     Washington                 5,373               377,00
+## 48  West Virginia                 2,737              145,000
+## 49      Wisconsin                 7,376              644,000
+## 50        Wyoming                   701               56,873
+##    weekly.average.cases vaccines.distributed vaccinated Total.Population
+## 1                   312            3,248,260  2,021,334        4,903,185
+## 2                   222              703,015    448,337          731,545
+## 3                   730            5,127,405  3,975,606        7,278,717
+## 4                   156            2,121,930  1,405,745        3,017,825
+## 5                 2,488           28,532,520 21,725,654       39,512,223
+## 6                 1,481            4,016,000  3,184,749        5,758,736
+## 7                 1,044            2,972,115  2,340,942        3,565,287
+## 8                   317              720,505    549,853          973,764
+## 9                 5,711           15,556,985 11,367,878       21,477,737
+## 10                  870            7,067,975  4,660,059       10,617,423
+## 11                   99            1,136,660    816,481        1,415,872
+## 12                  233            1,149,805    873,222        1,787,065
+## 13                3,012            9,110,565  7,017,850       12,671,821
+## 14                1,017            4,227,610  3,229,355        6,732,219
+## 15                  526            2,186,505  1,807,025        3,155,070
+## 16                  201            2,124,855  1,558,508        2,913,314
+## 17                  518            3,074,595  2,471,143        4,467,673
+## 18                  371            3,159,400  2,239,421        4,648,794
+## 19                1,880            1,008,240    856,186        1,344,212
+## 20                1,271            4,384,740  3,414,598        6,045,680
+## 21                  315            5,211,830  4,345,857        6,949,503
+## 22                7,226            6,895,860  5,223,390        9,986,857
+## 23                1,931            3,752,100  3,260,958        5,639,632
+## 24                  205            2,031,745  1,312,516        2,976,149
+## 25                  599            4,222,465  3,020,648        6,137,428
+## 26                  145              805,675    609,984        1,068,778
+## 27                  270            1,388,380  1,107,623        1,934,408
+## 28                1,103            2,001,620  1,576,189        3,080,156
+## 29                  415              964,805    889,074        1,359,711
+## 30                4,007            6,243,165  5,531,413        8,882,190
+## 31                  186            1,679,965  1,448,347        2,096,829
+## 32                7,289           14,162,005 11,519,440       19,453,561
+## 33                1,532            7,283,460  5,402,133       10,488,084
+## 34                  151              546,570    474,619          762,062
+## 35                1,935            8,210,715  6,308,301       11,689,100
+## 36                  309            3,099,955  2,235,462        3,956,971
+## 37                  467            2,903,425  2,211,938        4,217,737
+## 38                4,328            9,242,995  6,920,672       12,801,989
+## 39                  588              779,635    667,244        1,059,361
+## 40                  982            3,452,035  2,539,519        5,148,714
+## 41                  174              727,915    571,138          884,659
+## 42                1,051            4,505,880  3,122,632        6,833,174
+## 43                3,239           18,984,205 14,219,706       28,995,881
+## 44                  455            1,942,410  1,614,798        3,205,958
+## 45                  164              501,360    394,697          623,989
+## 46                1,473            5,850,555  4,849,229        8,535,519
+## 47                1,064            5,380,020  4,256,546        7,614,893
+## 48                  370            1,330,625    995,174        1,792,147
+## 49                  835            3,960,825  3,461,130        5,822,434
+## 50                   58              447,855    289,028          578,759
+##    Covid.Cases.65. Covid.Cases.under.65 state.provided.age.case.data. recovered
+## 1           67,923              335,415                           Yes   325,733
+## 2            8,870               53,291                           Yes         0
+## 3          113,068              733,977                           Yes         0
+## 4           48,900              282,804                           Yes   324,582
+## 5          379,037            3,203,925                           Yes         0
+## 6                0                    0                            No         0
+## 7           66,158              254,619                           Yes         0
+## 8                0                    0                            No         0
+## 9          302,496            1,768,260                           Yes         0
+## 10         165,730              689,647                           Yes         0
+## 11           5,004               24,212                           Yes         0
+## 12               0                    0                            No         0
+## 13         253,118            1,019,617                           Yes 1,251,293
+## 14               0                    0                            No         0
+## 15          50,637              203,428                           Yes         0
+## 16          35,185              195,708                           Yes         0
+## 17          94,638              337,369                           Yes    50,372
+## 18               0                    0                            No         0
+## 19          11,829               41,605                           Yes         0
+## 20               0                    0                            No         0
+## 21               0                    0                            No         0
+## 22               0                    0                            No         0
+## 23         100,587              439,078                           Yes         0
+## 24               0                    0                            No   296,569
+## 25          19,278              100,731                           Yes         0
+## 26               0                    0                            No   103,540
+## 27               0                    0                            No         0
+## 28               0                    0                            No         0
+## 29          17,222               70,681                           Yes    83,501
+## 30               0                    0                            No         0
+## 31          33,854              159,373                           Yes   174,849
+## 32               0                    0                            No         0
+## 33         133,780              788,599                           Yes         0
+## 34               0                    0                            No   101,993
+## 35               0                    0                            No   981,253
+## 36          63,028              376,958                           Yes   423,402
+## 37               0                    0                            No         0
+## 38         261,247              807,395                           Yes   962,076
+## 39               0                    0                            No         0
+## 40               0                    0                            No         0
+## 41          25,895               93,810                           Yes   115,346
+## 42               0                    0                            No   797,011
+## 43               0                    0                            No         0
+## 44          31,311              358,415                           Yes   389,760
+## 45               0                    0                            No    17,266
+## 46         119,125              497,199                           Yes         0
+## 47               0                    0                            No         0
+## 48               0                    0                            No         0
+## 49               0                    0                            No   569,194
+## 50               0                    0                            No    47,126
+##    State.provided.recovered.data. total.number.of.tests daily.positive.
+## 1                             Yes                     0           7.33%
+## 2                              No             1,966,048           3.17%
+## 3                              No             8,761,941          10.60%
+## 4                             Yes             3,437,770               0
+## 5                              No            56,078,860           1.70%
+## 6                              No             2,788,638           4.97%
+## 7                              No             8,002,182           3.37%
+## 8                              No               673,728           5.40%
+## 9                              No                     0           6.94%
+## 10                             No             7,975,847           4.50%
+## 11                             No                     0           1.70%
+## 12                             No                     0           5.07%
+## 13                            Yes            21,102,407              0%
+## 14                             No             9,187,249           4.08%
+## 15                             No             4,580,733              0%
+## 16                             No             1,335,069           2.70%
+## 17                            Yes             5,173,076           2.99%
+## 18                             No             6,671,092              0%
+## 19                             No             2,164,556           2.68%
+## 20                             No                     0           5.40%
+## 21                             No                     0           2.30%
+## 22                             No            12,514,712              0%
+## 23                             No             8,567,524              0%
+## 24                            Yes             2,633,209              0%
+## 25                             No             6,286,100           4.70%
+## 26                            Yes                     0              0%
+## 27                             No             1,017,623              0%
+## 28                             No             1,427,948           4.90%
+## 29                            Yes               712,674              0%
+## 30                             No            12,578,312              0%
+## 31                            Yes             3,079,551              0%
+## 32                             No            47,244,227           4.10%
+## 33                             No            11,641,898           4.60%
+## 34                            Yes             1,841,920           5.45%
+## 35                            Yes                     0              0%
+## 36                            Yes                     0              0%
+## 37                             No             4,300,000           4.10%
+## 38                            Yes            12,148,589              0%
+## 39                             No             3,680,071           2.40%
+## 40                             No             6,990,408           4.50%
+## 41                            Yes               452,497           8.00%
+## 42                            Yes             9,051,099              0%
+## 43                             No                     0              0%
+## 44                            Yes             2,442,968              0%
+## 45                            Yes               365,190           1.90%
+## 46                             No             8,700,856           6.60%
+## 47                             No             6,115,030           3.70%
+## 48                             No             2,541,058           4.16%
+## 49                            Yes             3,353,928           3.80%
+## 50                            Yes               207,049           2.70%
+##    State.provided.total.test.data.    PCR.    PCR..1 antigen. antigen..1
+## 1                               No       0         0        0          0
+## 2                              Yes       0         0        0          0
+## 3                              Yes       0         0        0          0
+## 4                              Yes 260,450 2,638,124   84,643    454,553
+## 5                              Yes       0         0        0          0
+## 6                              Yes       0         0        0          0
+## 7                              Yes       0         0        0          0
+## 8                              Yes       0         0        0          0
+## 9                               No       0         0        0          0
+## 10                             Yes 834,801         0  211,288          0
+## 11                              No       0         0        0          0
+## 12                              No       0         0        0          0
+## 13                             Yes       0         0        0          0
+## 14                             Yes       0         0        0          0
+## 15                             Yes 320,212 2,646,531   65,452  1,530,743
+## 16                             Yes       0         0        0          0
+## 17                             Yes       0         0        0          0
+## 18                             Yes       0         0        0          0
+## 19                             Yes  42,621 1,812,581   14,503    274,853
+## 20                              No       0         0        0          0
+## 21                              No       0         0        0          0
+## 22                             Yes       0         0        0          0
+## 23                             Yes 507,098    33,179        0          0
+## 24                             Yes       0         0        0          0
+## 25                             Yes       0         0        0          0
+## 26                              No       0         0        0          0
+## 27                             Yes       0         0        0          0
+## 28                             Yes       0         0        0          0
+## 29                             Yes       0         0        0          0
+## 30                             Yes       0         0        0          0
+## 31                             Yes       0         0        0          0
+## 32                             Yes       0         0        0          0
+## 33                             Yes 800,770         0  128,636          0
+## 34                             Yes       0         0        0          0
+## 35                              No       0         0        0          0
+## 36                              No       0         0        0          0
+## 37                             Yes       0         0        0          0
+## 38                             Yes       0         0        0          0
+## 39                             Yes       0         0        0          0
+## 40                             Yes       0         0        0          0
+## 41                             Yes       0         0        0          0
+## 42                             Yes 784,564 6,561,563  154,237  1,550,735
+## 43                              No       0         0        0          0
+## 44                             Yes       0         0        0          0
+## 45                             Yes       0         0        0          0
+## 46                             Yes       0         0        0          0
+## 47                             Yes       0         0        0          0
+## 48                             Yes       0         0        0          0
+## 49                             Yes       0         0        0          0
+## 50                             Yes       0         0        0          0
+##      Total..  Total...1 Daily.positve..given. PCR.antigen.data.given.
+## 1          0          0                   Yes                      No
+## 2          0          0                   Yes                      No
+## 3          0          0                   Yes                      No
+## 4    345,093  3,092,677                    No                     Yes
+## 5          0          0                   Yes                      No
+## 6          0          0                   Yes                      No
+## 7    321,586  7,680,596                   Yes                      No
+## 8     98,200    575,525                   Yes                      No
+## 9  2,078,784          0                   Yes                      No
+## 10 1,046,089  6,929,758                   Yes                     Yes
+## 11         0          0                   Yes                      No
+## 12         0          0                   Yes                      No
+## 13         0          0                    No                      No
+## 14   697,533  8,489,716                   Yes                      No
+## 15   385,664  4,177,274                    No                     Yes
+## 16   304,236  1,030,833                   Yes                      No
+## 17   432,720  4,740,356                   Yes                      No
+## 18   382,477  6,288,615                    No                      No
+## 19    57,124  2,087,434                   Yes                     Yes
+## 20   540,277  3,229,264                   Yes                      No
+## 21         0          0                   Yes                      No
+## 22         0          0                    No                      No
+## 23   540,277  8,027,247                    No                     Yes
+## 24         0          0                    No                      No
+## 25         0          0                   Yes                      No
+## 26         0          0                    No                      No
+## 27   214,010    803,613                    No                      No
+## 28         0          0                   Yes                      No
+## 29         0          0                    No                      No
+## 30         0          0                    No                      No
+## 31         0          0                    No                      No
+## 32 1,934,640 45,309,587                   Yes                      No
+## 33   929,406 10,712,492                   Yes                     Yes
+## 34   104,701  1,737,219                   Yes                      No
+## 35         0          0                    No                      No
+## 36         0          0                    No                      No
+## 37   245,000  4,000,000                   Yes                      No
+## 38         0  4,220,187                    No                      No
+## 39   141,097  3,538,974                   Yes                      No
+## 40   470,805  6,519,603                   Yes                      No
+## 41         0          0                   Yes                      No
+## 42   938,801  8,112,298                    No                     Yes
+## 43         0          0                    No                      No
+## 44         0          0                    No                      No
+## 45         0          0                   Yes                      No
+## 46         0          0                   Yes                      No
+## 47         0          0                   Yes                      No
+## 48         0          0                   Yes                      No
+## 49   584,739  2,768,189                   Yes                      No
+## 50         0          0                   Yes                      No
+##    Total.....data.given.  X X.1
+## 1                     No NA  NA
+## 2                     No NA  NA
+## 3                     No NA  NA
+## 4                    Yes NA  NA
+## 5                     No NA  NA
+## 6                     No NA  NA
+## 7                    Yes NA  NA
+## 8                    Yes NA  NA
+## 9                    Yes NA  NA
+## 10                   Yes NA  NA
+## 11                    No NA  NA
+## 12                    No NA  NA
+## 13                    No NA  NA
+## 14                   Yes NA  NA
+## 15                   Yes NA  NA
+## 16                   Yes NA  NA
+## 17                   Yes NA  NA
+## 18                   Yes NA  NA
+## 19                   Yes NA  NA
+## 20                   Yes NA  NA
+## 21                    No NA  NA
+## 22                    No NA  NA
+## 23                   Yes NA  NA
+## 24                    No NA  NA
+## 25                    No NA  NA
+## 26                    No NA  NA
+## 27                   Yes NA  NA
+## 28                    No NA  NA
+## 29                    No NA  NA
+## 30                    No NA  NA
+## 31                    No NA  NA
+## 32                   Yes NA  NA
+## 33                   Yes NA  NA
+## 34                   Yes NA  NA
+## 35                    No NA  NA
+## 36                    No NA  NA
+## 37                   Yes NA  NA
+## 38                   Yes NA  NA
+## 39                   Yes NA  NA
+## 40                   Yes NA  NA
+## 41                    No NA  NA
+## 42                   Yes NA  NA
+## 43                    No NA  NA
+## 44                    No NA  NA
+## 45                    No NA  NA
+## 46                    No NA  NA
+## 47                    No NA  NA
+## 48                    No NA  NA
+## 49                   Yes NA  NA
+## 50                    No NA  NA
+map<-map[-26] ; map<- map[-25]
+map$Total.Covid.19.Deaths <- as.numeric(gsub(",","",map$Total.Covid.19.Deaths))
+map$Total.Covid.19.Cases <- as.numeric(gsub(",","",map$Total.Covid.19.Cases))
+map$weekly.average.cases <- as.numeric(gsub(",","",map$weekly.average.cases))
+map$vaccines.distributed <- as.numeric(gsub(",","",map$vaccines.distributed))
+map$Total.Population <- as.numeric(gsub(",","",map$Total.Population))
+map$vaccinated <- as.numeric(gsub(",","",map$vaccinated))
+map$Covid.Cases.65. <- as.numeric(gsub(",","",map$Covid.Cases.65.))
+map$Covid.Cases.under.65 <- as.numeric(gsub(",","",map$Covid.Cases.under.65))
+map$recovered <- as.numeric(gsub(",","",map$recovered))
+map$total.number.of.tests <- as.numeric(gsub(",","",map$total.number.of.tests))
+map$PCR. <- as.numeric(gsub(",","",map$PCR.))
+map$PCR..1 <- as.numeric(gsub(",","",map$PCR.))
+map$antigen. <- as.numeric(gsub(",","",map$antigen.))
+map$antigen..1 <- as.numeric(gsub(",","",map$antigen..1))
+map$Total.. <- as.numeric(gsub(",","",map$Total..))
+map$Total...1 <- as.numeric(gsub(",","",map$Total...1))
+map$VaccinatedPerCapita <- as.numeric(gsub(",","",map$Total...1))
+#change column values of map$State column to state codes instead of state names
+map$State<-c("AL","AL","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL",
+  "IN", "IA", "KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE",
+  "NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD",
+  "TN","TX","UT","VT","VA","WA","WV","WI","WY")
+#make a new column chowing vaccinated per capita of 100,000 residents in each US State
+map$VaccinatedPerCapita <- round(map$vaccinated/map$Total.Population*100000,2)
+#run plotly plot_geo and fig functions
+#show labels when hoveringo n each US state
+map$hover <- with(map, paste(State, '<br>', "Vaccinated per 100,000 residents"))
+#customize map borders
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+#configure plotyl to create a US geographic map for vaccinated per capita
+fig <- plot_geo(map, locationmode = 'USA-states')
+fig <- fig %>% add_trace(
+  z = ~VaccinatedPerCapita, text = ~hover, locations = map$State,
+  color = ~VaccinatedPerCapita, colors = 'Blues'
+  )
+#Show title
+fig <- fig %>% colorbar(title = "people vaccinated per 100,000 citizens")
+fig <- fig %>% layout(title = 'people vaccinated per 100,000 residents each US State<br>(Hover for breakdown)', geo = g)
+#Show plotly US map
+fig
+#run the previous process but for total covid cases per 100,000 residents
+map$CovidPerCapita <- round(map$Total.Covid.19.Cases/map$Total.Population*100000,2)
+map$hover2 <- with(map, paste(State, '<br>', "Covid-19 Cases per 100,000 residents"))
+#customize map borders
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+fig2 <- plot_geo(map, locationmode = 'USA-states')
+fig2 <- fig2 %>% add_trace(
+  z = ~CovidPerCapita, text = ~hover2, locations = map$State,
+  color = ~CovidPerCapita, colors = 'Oranges'
+  )
+#Show title
+fig2 <- fig2 %>% colorbar(title = "covid-19 cases per 100,000 citizens")
+fig2 <- fig2 %>% layout(title = 'Covid-19 cases per 100,000 residents each US State<br>(Hover for breakdown)', geo = g)
+#Show plotly US map
+fig2
